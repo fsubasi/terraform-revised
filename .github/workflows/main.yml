@@ -1,0 +1,76 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.5
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan Dev
+        run: terraform plan -var-file="environments/dev/dev.tfvars" -out=tfplan-dev
+
+      - name: Upload Terraform Plan Dev
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-dev
+          path: tfplan-dev
+
+      - name: Terraform Plan Clint
+        run: terraform plan -var-file="environments/dev/clint.tfvars" -out=tfplan-clint
+
+      - name: Upload Terraform Plan Clint
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-clint
+          path: tfplan-clint
+
+      - name: Terraform Plan Natasha
+        run: terraform plan -var-file="environments/dev/natasha.tfvars" -out=tfplan-natasha
+
+      - name: Upload Terraform Plan Natasha
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-natasha
+          path: tfplan-natasha
+
+      - name: Terraform Plan Staging Integration
+        run: terraform plan -var-file="environments/staging/integration.tfvars" -out=tfplan-staging-int
+
+      - name: Upload Terraform Plan Staging Integration
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-staging-int
+          path: tfplan-staging-int
+
+      - name: Terraform Plan Staging Performance
+        run: terraform plan -var-file="environments/staging/performance.tfvars" -out=tfplan-staging-perf
+
+      - name: Upload Terraform Plan Staging Performance
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-staging-perf
+          path: tfplan-staging-perf
+
+      - name: Terraform Plan Prod
+        run: terraform plan -var-file="environments/prod/prod.tfvars" -out=tfplan-prod
+
+      - name: Upload Terraform Plan Prod
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-prod
+          path: tfplan-prod
